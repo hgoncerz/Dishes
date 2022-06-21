@@ -1,74 +1,64 @@
 import React, { useState } from "react";
+import { reduxForm, Field } from "redux-form";
 
-const DishType = ({ foodState }) => {
+const renderFieldSpiciness = ({
+  type,
+  label,
+  input,
+  meta: { touched, error },
+}) => (
+  <div>
+    <label className="block text-sm font-medium text-gray-700">{label}</label>
+    <input {...input} type={type} min="1" max="10" className="myForm" />
+    {touched && error && <span>{error}</span>}
+  </div>
+);
+
+const DishType = ({ foodState, renderField }) => {
   if (foodState === "pizza") {
     return (
       <div>
-        <label
-          htmlFor="no_of_slices"
-          className="block text-sm font-medium text-gray-700"
-        >
-          Slice number
-        </label>
-        <input
-          type="number"
-          id="no_of_slices"
+        <Field
           name="no_of_slices"
-          required
-          className="myForm"
-        />
-        <label
-          htmlFor="diameter"
-          className="block text-sm font-medium text-gray-700"
-        >
-          Diameter
-        </label>
-        <input
+          label="Slice number"
+          component={renderField}
           type="number"
-          step="0.1"
-          id="diameter"
+        />
+        <Field
           name="diameter"
-          required
-          className="myForm"
+          label="Diameter"
+          component={renderField}
+          type="number"
         />
       </div>
     );
   } else if (foodState === "soup") {
     return (
       <div>
-        <label
-          htmlFor="spiciness_scale"
-          className="block text-sm font-medium text-gray-700"
-        >
-          Spiciness scale
-        </label>
-        <input
-          type="number"
-          min="1"
-          max="10"
-          id="spiciness_scale"
+        <Field
           name="spiciness_scale"
-          required
-          className="myForm"
+          label="Spiciness scale"
+          component={renderFieldSpiciness}
+          type="number"
         />
       </div>
     );
   } else if (foodState === "sandwich") {
     return (
       <div>
-        <label
-          htmlFor="slices_of_bread"
-          className="block text-sm font-medium text-gray-700"
-        >
-          Number of slices
-        </label>
-        <input
+        <Field
+          name="slices_of_bread"
+          label="Number of slices"
+          component={renderField}
+          type="number"
+        />
+        {/* <input
           type="number"
           id="slices_of_bread"
           name="slices_of_bread"
           required
           className="myForm"
-        />
+        /> */}
       </div>
     );
   }

@@ -1,45 +1,50 @@
 import React, { useState } from "react";
 import DishType from "./DishType";
 // import { createStore, combineReducers } from "redux";
-// import { reduxForm, Field } from "redux-form";
+import { reduxForm, Field } from "redux-form";
 
-const Form = () => {
+const submit = (value) => {
+  console.log(value);
+};
+
+const renderField = ({ type, label, input, meta: { touched, error } }) => (
+  <div>
+    <label className="block text-sm font-medium text-gray-700">{label}</label>
+    <input {...input} type={type} className="myForm" />
+    {touched && error && <span>{error}</span>}
+  </div>
+);
+
+const renderFieldTime = ({ type, label, input, meta: { touched, error } }) => (
+  <div>
+    <label className="block text-sm font-medium text-gray-700">{label}</label>
+    <input {...input} type={type} step="1" className="myForm" />
+    {touched && error && <span>{error}</span>}
+  </div>
+);
+
+const Form = ({ handleSubmit }) => {
   const [foodState, setFoodState] = useState("pizza");
   return (
     <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
       <div className="bg-white py-8 px-6 shadow rounded-lg sm:px-10">
-        <form action="">
+        <form onSubmit={handleSubmit(submit)}>
           <div>
             <div>
-              <label
-                htmlFor="name"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Dish Name:
-              </label>
-              <input
-                type="text"
-                placeholder="Enter dish"
-                id="name"
+              <Field
                 name="name"
-                required
-                className="myForm"
+                label="Dish Name"
+                component={renderField}
+                type="text"
               />
             </div>
             <div>
-              <label
-                htmlFor="preparation_time"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Preparation time:
-              </label>
-              <input
+              <Field
+                name="preparation_time"
+                label="Preparation time"
+                component={renderFieldTime}
                 type="time"
                 step="1"
-                id="preparation_time"
-                name="preparation_time"
-                required
-                className="myForm"
               />
             </div>
             <div>
@@ -49,22 +54,23 @@ const Form = () => {
               >
                 Dish type:
               </label>
-              <select
-                onChange={(e) => {
-                  const selectedFood = e.target.value;
-                  setFoodState(selectedFood);
-                }}
-                id="type"
-                name="type"
-                required
-                className="myForm"
-              >
-                <option value="pizza">Pizza</option>
-                <option value="soup">Soup</option>
-                <option value="sandwich">Sandwich</option>
-              </select>
+              <div>
+                <Field
+                  onChange={(e) => {
+                    const selectedFood = e.target.value;
+                    setFoodState(selectedFood);
+                  }}
+                  name="type"
+                  component="select"
+                  className="myForm"
+                >
+                  <option value="pizza">Pizza</option>
+                  <option value="soup">Soup</option>
+                  <option value="sandwich">Sandwich</option>
+                </Field>
+              </div>
             </div>
-            <DishType foodState={foodState} />
+            <DishType foodState={foodState} renderField={renderField} />
             <div>
               <button
                 type="submit"
@@ -84,4 +90,6 @@ const Form = () => {
 //   form: "dish-form",
 // })(Form);
 
-export default Form;
+export default reduxForm({
+  form: "my-form",
+})(Form);
