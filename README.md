@@ -1,3 +1,9 @@
+#Node + npm version 
+##node -v = v16.14.2
+##npm -v = 8.5.0
+
+#The time it took you to perform the task = 6/8h
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
