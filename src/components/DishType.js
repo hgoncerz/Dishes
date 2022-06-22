@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { reduxForm, Field } from "redux-form";
+import { reduxForm, Field, SubmissionError } from "redux-form";
 
 const renderFieldSpiciness = ({
   type,
@@ -9,7 +9,14 @@ const renderFieldSpiciness = ({
 }) => (
   <div>
     <label className="block text-sm font-medium text-gray-700">{label}</label>
-    <input {...input} type={type} min="1" max="10" className="myForm" />
+    <input
+      {...input}
+      type={type}
+      min="1"
+      max="10"
+      className="myForm"
+      required
+    />
     {touched && error && <span>{error}</span>}
   </div>
 );
@@ -52,13 +59,6 @@ const DishType = ({ foodState, renderField }) => {
           component={renderField}
           type="number"
         />
-        {/* <input
-          type="number"
-          id="slices_of_bread"
-          name="slices_of_bread"
-          required
-          className="myForm"
-        /> */}
       </div>
     );
   }

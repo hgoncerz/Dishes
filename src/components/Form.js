@@ -1,25 +1,122 @@
 import React, { useState } from "react";
 import DishType from "./DishType";
 // import { createStore, combineReducers } from "redux";
-import { reduxForm, Field } from "redux-form";
+import { reduxForm, Field, SubmissionError } from "redux-form";
 
-const submit = (value) => {
-  console.log(value);
+async function submitToServer(data) {
+  try {
+    let response = await fetch(
+      "https://frosty-wood-6558.getsandbox.com:443/dishes",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      }
+    );
+    let responseJson = await response.json();
+    return responseJson;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+const submit = ({
+  name = "",
+  preparation_time = "",
+  type = "",
+  no_of_slices = 0,
+  diameter = 0,
+  spiciness_scale = 0,
+  slices_of_bread = 0,
+}) => {
+  let error = {};
+  let isError = false;
+
+  if (name.trim() === "") {
+    error.name = "Required";
+    isError = true;
+  }
+  if (preparation_time.trim() === "") {
+    error.preparation_time = "Required";
+    isError = true;
+  }
+  if (type.trim() === "") {
+    error.type = "Required";
+    isError = true;
+  }
+
+  if (isError) {
+    throw new SubmissionError(error);
+  } else {
+    //submit form
+
+    if (type === "soup") {
+      spiciness_scale = Number(spiciness_scale);
+      if (spiciness_scale === 0) {
+        error.type = "Required";
+        isError = true;
+      } else {
+        return submitToServer({
+          name,
+          preparation_time,
+          type,
+          spiciness_scale,
+        }).then((data) => {
+          if (data.errors) {
+            throw new SubmissionError(data.errors);
+          } else {
+            console.log("server added data to database");
+            console.log(data);
+          }
+        });
+      }
+    } else if (type === "pizza") {
+      no_of_slices = Number(no_of_slices);
+      diameter = parseFloat(diameter);
+      if (no_of_slices === 0 || diameter === 0) {
+        error.no_of_slices = "Required";
+        error.diameter = "Required";
+      } else {
+        submitToServer({
+          name,
+          preparation_time,
+          type,
+          no_of_slices,
+          diameter,
+        }).then((data) => console.log(data));
+      }
+    } else if (type === "sandwich") {
+      slices_of_bread = Number(slices_of_bread);
+
+      if (slices_of_bread === 0) {
+        error.slices_of_bread = "Required";
+      } else {
+        submitToServer({
+          name,
+          preparation_time,
+          type,
+          slices_of_bread,
+        }).then((data) => console.log(data));
+      }
+    }
+  }
 };
 
 const renderField = ({ type, label, input, meta: { touched, error } }) => (
   <div>
     <label className="block text-sm font-medium text-gray-700">{label}</label>
-    <input {...input} type={type} className="myForm" />
-    {touched && error && <span>{error}</span>}
+    <input {...input} type={type} className="myForm" required />
+    {touched && error && <span className="text-red-400">{error}</span>}
   </div>
 );
 
 const renderFieldTime = ({ type, label, input, meta: { touched, error } }) => (
   <div>
     <label className="block text-sm font-medium text-gray-700">{label}</label>
-    <input {...input} type={type} step="1" className="myForm" />
-    {touched && error && <span>{error}</span>}
+    <input {...input} type={type} step="1" className="myForm" required />
+    {touched && error && <span className="text-red-400">{error}</span>}
   </div>
 );
 
